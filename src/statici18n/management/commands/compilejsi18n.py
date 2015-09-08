@@ -23,22 +23,41 @@ else:
 
 
 class Command(NoArgsCommand):
-    option_list = NoArgsCommand.option_list + (
-        make_option('--locale', '-l', dest='locale',
-                    help="The locale to process. Default is to process all."),
-        make_option('-d', '--domain',
-                    dest='domain', default=settings.STATICI18N_DOMAIN,
-                    help="Override the gettext domain. By default, "
-                         " the command uses the djangojs gettext domain."),
-        make_option('-p', '--packages', action='append', default=[],
-                    dest='packages',
-                    help="A list of packages to check for translations. "
-                         "Default is 'django.conf'. Use multiple times to "
-                         "add more."),
-        make_option('-o', '--output', dest='outputdir', metavar='OUTPUT_DIR',
-                    help="Output directory to store generated catalogs. "
-                         "Defaults to static/jsi18n.")
-    )
+
+    if django.VERSION < (1, 8):
+        option_list = NoArgsCommand.option_list + (
+            make_option('--locale', '-l', dest='locale',
+                        help="The locale to process. Default is to process all."),
+            make_option('-d', '--domain',
+                        dest='domain', default=settings.STATICI18N_DOMAIN,
+                        help="Override the gettext domain. By default, "
+                             " the command uses the djangojs gettext domain."),
+            make_option('-p', '--packages', action='append', default=[],
+                        dest='packages',
+                        help="A list of packages to check for translations. "
+                             "Default is 'django.conf'. Use multiple times to "
+                             "add more."),
+            make_option('-o', '--output', dest='outputdir', metavar='OUTPUT_DIR',
+                        help="Output directory to store generated catalogs. "
+                             "Defaults to static/jsi18n.")
+        )
+
+    def add_arguments(self, parser):
+        parser.add_argument('--locale', '-l', dest='locale',
+                            help="The locale to process. Default is to process all.")
+        parser.add_argument('-d', '--domain',
+                            dest='domain', default=settings.STATICI18N_DOMAIN,
+                            help="Override the gettext domain. By default, "
+                                 " the command uses the djangojs gettext domain.")
+        parser.add_argument('-p', '--packages', action='append', default=[],
+                            dest='packages',
+                            help="A list of packages to check for translations. "
+                                 "Default is 'django.conf'. Use multiple times to "
+                                 "add more.")
+        parser.add_argument('-o', '--output', dest='outputdir', metavar='OUTPUT_DIR',
+                            help="Output directory to store generated catalogs. "
+                                 "Defaults to static/jsi18n.")
+
     help = "Collect Javascript catalog files in a single location."
 
     def __init__(self):
